@@ -9,12 +9,14 @@ import com.example.meteodairykotlin.R
 import com.example.meteodairykotlin.models.City
 import kotlinx.android.synthetic.main.activity_main.view.*
 
-class PickerCityAdapter(val cities:List<City>,val listner:OnClickCityListner) : RecyclerView.Adapter<PickerCityAdapter.ViewHolder>() {
-interface OnClickCityListner{
-    fun pickCity(city:City)
-}
+class PickerCityAdapter(val cities: List<City>, val listner: OnClickCityListner) :
+    RecyclerView.Adapter<PickerCityAdapter.ViewHolder>() {
+    interface OnClickCityListner {
+        fun pickCity(city: City)
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.city,parent,false))
+        return ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.city, parent, false))
     }
 
     override fun getItemCount(): Int {
@@ -22,13 +24,15 @@ interface OnClickCityListner{
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.txtCity.setText(cities.get(position).name)
-        holder.txtCity.setOnClickListener {
-            listner.pickCity(cities.get(position))
+        holder.run {
+            txtCity.setText(cities.get(position).name)
+            txtCity.setOnClickListener {
+                listner.pickCity(cities.get(position))
+            }
         }
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val txtCity:TextView=itemView.findViewById(R.id.txtDialogCity)
+        val txtCity: TextView = itemView.findViewById(R.id.txtDialogCity)
     }
 }

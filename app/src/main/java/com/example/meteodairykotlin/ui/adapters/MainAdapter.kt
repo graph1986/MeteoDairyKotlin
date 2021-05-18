@@ -30,18 +30,22 @@ class MainAdapter(val days: List<DayMeteo>) : RecyclerView.Adapter<MainAdapter.V
             holder.contDay.setBackgroundColor(Color.YELLOW)
         }
         val calendar: Calendar = Calendar.getInstance()
-        calendar.set(Calendar.MONTH, days.get(position).month-1)
-        val month:String=SimpleDateFormat("MMMM",Locale("ru")).format(calendar.time)
-        holder.txtNumberDay.setText(
-            days.get(position).numberDay.toString() + "\n" + month +"\n" + days.get(
-                position
-            ).year.toString()
-        )
-        holder.txtTemperature.setText(days.get(position).temperature)
-        Picasso.get().load("https://" + days.get(position).urlCloud).resize(60, 60).centerInside()
-            .into(holder.imgCloud)
-        Picasso.get().load("https://" + days.get(position).urlEffect).resize(60, 60).centerInside()
-            .into(holder.imgEffect)
+        calendar.set(Calendar.MONTH, days.get(position).month - 1)
+        val month: String = SimpleDateFormat("MMMM", Locale("ru")).format(calendar.time)
+        holder.run {
+            txtNumberDay.setText(
+                days.get(position).numberDay.toString() + "\n" + month + "\n" + days.get(
+                    position
+                ).year.toString()
+            )
+            txtTemperature.setText(days.get(position).temperature)
+            Picasso.get().load("https://" + days.get(position).urlCloud).resize(60, 60)
+                .centerInside()
+                .into(this.imgCloud)
+            Picasso.get().load("https://" + days.get(position).urlEffect).resize(60, 60)
+                .centerInside()
+                .into(this.imgEffect)
+        }
     }
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

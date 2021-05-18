@@ -11,6 +11,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.functions.Consumer
 import io.reactivex.schedulers.Schedulers
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class MainPresenter @Inject constructor(
@@ -23,14 +24,24 @@ class MainPresenter @Inject constructor(
     private var pastYear = 0
     private var month: Int = 0
     private var pastMonth = 0
-    private var cities = mutableListOf<City>()
+    private  var cities = mutableListOf<City>().apply {
+        add(City(4364, "-kazan-", "Казань"))
+        add(City(201904, "-krasny-steklovar-", "Красный-Стекловар"))
+        add(City(205398, "-kukeyevo-", "Кукеево"))
+        add(City(205002, "-tatarskiye-saraly-", "Татарские Саралы"))
+        add(City(201468, "-ilet-", "Илеть"))
+        add(City(205367, "-shali-", "Шали"))
+        add(City(204985, "-matyushino-", "Матюшино"))
+        add(City(204605, "-dubyazy-", "Дубъязы"))
+        add(City(204970, "-bima-", "Бима"))
+        add(City(204568, "-oktyabrsky-", "Октябрьский"))
+    }
     private lateinit var city: City
     lateinit var compositeDisposable: CompositeDisposable
 
 
     override fun onStart(view: MainContract.View) {
         this.view = view
-        createCityList()
         compositeDisposable = CompositeDisposable()
         city = cities[0]
         year = Calendar.getInstance().get(Calendar.YEAR)
@@ -72,21 +83,19 @@ class MainPresenter @Inject constructor(
                     val lastFiveDay = calendar[Calendar.DAY_OF_MONTH]
                     calendar.add(Calendar.DAY_OF_MONTH, +10)
                     val futureFiveDay = calendar[Calendar.DAY_OF_MONTH]
-                    if (dayMeteoList[0].numberDay == lastFiveDay && dayMeteoList[10].numberDay == futureFiveDay
-                    ) {
-                        view?.showWeather(dayMeteoList, city.name)
-                    } else if (dayMeteoList[10].numberDay != futureFiveDay) {
-                        loadWeather(year, month)
-                    } else if (dayMeteoList[0].numberDay != lastFiveDay) {
-                        loadDairy(year, month)
+                    when {
+                        dayMeteoList[0].numberDay == lastFiveDay && dayMeteoList[10].numberDay == futureFiveDay -> view?.showWeather(
+                            dayMeteoList,
+                            city.name
+                        )
+                        dayMeteoList[10].numberDay != futureFiveDay -> loadWeather(year, month)
+                        dayMeteoList[0].numberDay != lastFiveDay -> loadDairy(year, month)
                     }
-                } else {
-                    if (pastMonth == Calendar.DECEMBER) {
-                        loadDairy(pastYear, pastMonth)
-                    } else {
-                        loadDairy(year, pastMonth)
-                    }
+                } else when {
+                    (pastMonth == Calendar.DECEMBER) -> loadDairy(pastYear, pastMonth)
+                    else -> loadDairy(year, pastMonth)
                 }
+
             }, { view?.showError() })
             .also { compositeDisposable::add }
     }
@@ -125,29 +134,5 @@ class MainPresenter @Inject constructor(
                     }
                 }
         compositeDisposable.add(weatherDisposable)
-    }
-
-    private fun createCityList() {
-        val kazan = City(4364, "-kazan-", "Казань")
-        val krasnysteklovar = City(201904, "-krasny-steklovar-", "Красный-Стекловар")
-        val kukeyevo = City(205398, "-kukeyevo-", "Кукеево")
-        val tatarskiyesaraly = City(205002, "-tatarskiye-saraly-", "Татарские Саралы")
-        val ilet = City(201468, "-ilet-", "Илеть")
-        val shali = City(205367, "-shali-", "Шали")
-        val matyushino = City(204985, "-matyushino-", "Матюшино")
-        val dubyazy = City(204605, "-dubyazy-", "Дубъязы")
-        val bima = City(204970, "-bima-", "Бима")
-        val oktyabrsky = City(204568, "-oktyabrsky-", "Октябрьский")
-        cities = arrayListOf()
-        cities.add(kazan)
-        cities.add(krasnysteklovar)
-        cities.add(kukeyevo)
-        cities.add(tatarskiyesaraly)
-        cities.add(ilet)
-        cities.add(shali)
-        cities.add(matyushino)
-        cities.add(dubyazy)
-        cities.add(bima)
-        cities.add(oktyabrsky)
     }
 }

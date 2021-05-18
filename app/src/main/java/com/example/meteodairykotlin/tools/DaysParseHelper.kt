@@ -8,7 +8,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DaysParseHelper @Inject constructor(){
+class DaysParseHelper @Inject constructor() {
     fun parseDiary(s: String, city: Int, year: Int, month: Int): List<DayMeteo> {
         val dayMeteoList = arrayListOf<DayMeteo>()
         val document: org.jsoup.nodes.Document = Jsoup.parse(s)
@@ -29,7 +29,7 @@ class DaysParseHelper @Inject constructor(){
                     urlEffect =
                         i.getElementsByTag("td").get(4).getElementsByTag("img").get(0).attr("src")
                 }
-                val dayMeteo: DayMeteo =
+                val dayMeteo =
                     DayMeteo(numberDay, temperature, urlCloud, urlEffect, month, year, city)
                 dayMeteoList.add(dayMeteo)
             }
@@ -40,8 +40,8 @@ class DaysParseHelper @Inject constructor(){
     }
 
     fun parseWeather(s: String, city: Int, _year: Int, _month: Int): List<DayMeteo> {
-        var year=_year
-        var month=_month
+        var year = _year
+        var month = _month
         val dayMeteoList = arrayListOf<DayMeteo>()
         val document: org.jsoup.nodes.Document = Jsoup.parse(s)
         val date: org.jsoup.nodes.Element =
@@ -55,7 +55,7 @@ class DaysParseHelper @Inject constructor(){
         val value: org.jsoup.nodes.Element =
             templineTemperature.getElementsByClass("values").first()
         val values: Elements = value.getElementsByClass("value")
-        for (i in 0..5) {
+        for (i in 0 until 6) {
             val temperature: String =
                 values[i].getElementsByClass("unit unit_temperature_c").get(0).text()
             val numberDay: Int =
@@ -72,27 +72,29 @@ class DaysParseHelper @Inject constructor(){
                 }
             }
             var urlEffect: String = effects[i].getElementsByTag("span").get(0).attr("data-text")
-            urlEffect = if (urlEffect.contains("гроза")) {
-                "//st4.gismeteo.ru/static/diary/img/storm.png"
-            } else if (urlEffect.contains("дождь")) {
-                "//st8.gismeteo.ru/static/diary/img/rain.png"
-            } else if (urlEffect.contains("снег")) {
-                "//st8.gismeteo.ru/static/diary/img/snow.png"
-            } else {
-                ""
+            with(urlEffect) {
+                urlEffect = when {
+                    contains("гроза") -> "//st4.gismeteo.ru/static/diary/img/storm.png"
+                    contains("дождь") -> "//st8.gismeteo.ru/static/diary/img/rain.png"
+                    contains("снег") -> "//st8.gismeteo.ru/static/diary/img/snow.png"
+                    else -> ""
+                }
             }
+
             var urlCloud =
                 effects[i].getElementsByTag("span")[0].attr("data-text")
-            if (urlCloud.contains("Малооблачно")) {
-                urlCloud = "//st4.gismeteo.ru/static/diary/img/sunc.png"
-            } else if (urlCloud.contains("Ясно")) {
-                urlCloud = "//st7.gismeteo.ru/static/diary/img/sun.png"
-            } else if (urlCloud.contains("Переменная облачность")) {
-                urlCloud = "//st6.gismeteo.ru/static/diary/img/suncl.png"
-            } else if (urlCloud.contains("Пасмурно")) {
-                urlCloud = "//st7.gismeteo.ru/static/diary/img/dull.png"
+            with(urlCloud) {
+                urlCloud = when {
+                    contains("Малооблачно") -> "//st4.gismeteo.ru/static/diary/img/sunc.png"
+                    contains("Ясно") -> "//st7.gismeteo.ru/static/diary/img/sun.png"
+                    contains("Переменная облачность") -> "//st6.gismeteo.ru/static/diary/img/suncl.png"
+                    contains("Пасмурно") -> "//st7.gismeteo.ru/static/diary/img/dull.png"
+                    else -> ""
+                }
             }
-           val dayMeteo:DayMeteo= DayMeteo(numberDay,temperature,urlCloud,urlEffect,month,year,city)
+
+            val dayMeteo: DayMeteo =
+                DayMeteo(numberDay, temperature, urlCloud, urlEffect, month, year, city)
             dayMeteoList.add(dayMeteo)
         }
         return dayMeteoList
